@@ -1,9 +1,10 @@
 #!/usr/bin/env groovy
-
-try {
-    stage('Hello World'){
-        println("Hello World")
+node{
+    try {
+        stage('Hello World'){
+            println("Hello World")
+        }
+    } catch(Exception e){
+        println(e)
     }
-} catch(Exception e){
-    println(e)
 }
