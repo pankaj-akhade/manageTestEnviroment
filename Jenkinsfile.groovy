@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 try {
     stage('Hello World'){
         println("Hello World")
