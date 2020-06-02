@@ -1,1 +1,3 @@
-println("Hello World")
+stage('Hello World'){
+    println("Hello World")
+}
