@@ -1,0 +1,6 @@
+region = "us-east1"
+dbversion = "MYSQL_5_7"
+project = "flow-on-k8s-test"
+tier = "db-n1-standard-2"
+dbname = "gke-jenkins"
+vpcId = "gke-jenkins-vpc"

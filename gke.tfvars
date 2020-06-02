@@ -1,0 +1,10 @@
+region = "us-east1"
+project = "flow-on-k8s-test"
+machineType = "UBUNTU"
+diskSize = 20
+clusterName = "gke-jenkins"
+clusterVersion = "1.15"
+tier = "n1-standard-8"
+#vpcNetworkName = "default"
+saId = "qe-saas-jenkins"
+subnetCidr = "10.1.32.0/19"

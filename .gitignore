@@ -1,0 +1,10 @@
+gke/venv
+gke/.idea
+.idea/
+filestore/.terraform
+gke/.terraform
+sql/.terraform
+gke/terraform*
+sql/terraform*
+filestore/terraform*
+account.json
