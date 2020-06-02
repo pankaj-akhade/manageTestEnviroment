@@ -1,4 +1,7 @@
-def deployStage = params.DEPLOY_STAGE
-stage('Hello World'){
-    println("Hello World")
+try {
+    stage('Hello World'){
+        println("Hello World")
+    }
+} catch(Exception e){
+    println(e)
 }
