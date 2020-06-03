@@ -33,7 +33,12 @@ node{
         for(String resource in flowForDeleteEnv){
             stage(params.action + ' ' + resource){
                 def methodName = 'manage' + resource
-                "$methodName"(params.action)
+                try{
+                    "$methodName"(params.action)
+                }catch(error){
+                    println(error)
+                    println(params.clusterName + "-subnet does not exists. Skipping..")
+                }
             }
         }
     }
