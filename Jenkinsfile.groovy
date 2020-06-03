@@ -10,8 +10,9 @@ node{
         }
 
         stage(params.action + ' Subnetwork'){
-            def networksCmdMap = ["create": "gcloud compute networks subnets " +  params.clusterName + "-subnet --project=" +
-                         params.project + " --range=10.34.0.0/20 --network=" + params.clusterName + "-vpc --region=us-east1",
+            def networksCmdMap = ["create": "gcloud compute networks subnets create " +  params.clusterName +
+                   "-subnet --project=" + params.project + " --range=10.34.0.0/20 --network=" +
+                   params.clusterName + "-vpc --region=us-east1",
                    "delete": "gcloud compute networks delete my-vpc --project=" + params.project + " --quiet"]
             sh networksCmdMap[params.action]
         }
