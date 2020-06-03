@@ -32,12 +32,7 @@ node{
         for(String resource in flowForDeleteEnv){
             stage(params.action + ' ' + resource){
                 def methodName = 'manage' + resource.capitalize()
-                try{
-                    "$methodName"(params.action, resource)
-                }catch(error){
-                    println(error)
-                    println(params.clusterName + "-" + resource + " does not exists. Skipping..")
-                }
+                "$methodName"(params.action, resource)
             }
         }
     }
