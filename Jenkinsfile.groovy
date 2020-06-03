@@ -3,7 +3,7 @@
 def flowForCreateEnv = ["network", "subnetwork"]
 def flowForDeleteEnv = ["subnetwork", "network"]
 
-def manageNetwork(String action){
+def managenetwork(String action){
     def networksCmdMap = ["create": "gcloud compute networks create " +  params.clusterName + "-vpc --project=" +
                    params.project + " --subnet-mode=custom --bgp-routing-mode=regional",
                    "delete": "gcloud compute networks delete " +  params.clusterName + "-vpc --project=" +
@@ -11,7 +11,7 @@ def manageNetwork(String action){
     sh networksCmdMap[action]
 }
 
-def manageSubnetwork(String action){
+def managesubnetwork(String action){
     def networksCmdMap = ["create": "gcloud compute networks subnets create " +  params.clusterName +
            "-subnet --project=" + params.project + " --range=10.34.0.0/20 --network=" +
            params.clusterName + "-vpc --region=us-east1",
