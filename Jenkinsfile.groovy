@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
-def flowForCreateEnv = ["Network", "Subnetwork"]
-def flowForDeleteEnv = ["Subnetwork", "Network"]
+def flowForCreateEnv = ["network", "subnetwork"]
+def flowForDeleteEnv = ["subnetwork", "network"]
 
 def manageNetwork(String action){
     def networksCmdMap = ["create": "gcloud compute networks create " +  params.clusterName + "-vpc --project=" +
@@ -21,7 +21,6 @@ def manageSubnetwork(String action){
 }
 
 node{
-    //try {
     if (params.action == "create"){
         for(String resource in flowForCreateEnv){
             stage(params.action + ' ' + resource){
@@ -37,12 +36,9 @@ node{
                     "$methodName"(params.action)
                 }catch(error){
                     println(error)
-                    println(params.clusterName + "-subnet does not exists. Skipping..")
+                    println(params.clusterName + "-" + resource + " does not exists. Skipping..")
                 }
             }
         }
     }
-    /*} catch(Exception e){
-        println(e)
-    }*/
 }
