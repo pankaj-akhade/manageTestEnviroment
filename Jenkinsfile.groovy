@@ -16,7 +16,7 @@ def manageSubnet(String action, String resource){
            " --project=" + params.project + " --range=10.34.0.0/20 --network=" +
            params.clusterName + "-vpc --region=us-east1",
            "delete": "gcloud compute networks subnets delete " +  params.clusterName + "-" + resource + " --project=" +
-           params.project + "--region=us-east1 --quiet"]
+           params.project + " --region=us-east1 --quiet"]
     sh networksCmdMap[action]
 }
 
