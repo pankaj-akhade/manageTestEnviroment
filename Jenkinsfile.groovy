@@ -20,21 +20,21 @@ def manageSubnetwork(){
 }
 
 node{
-    try {
-        if (params.action == "create"){
-            for(String resource in flowForCreateEnv){
-                stage(params.action + ' ' + resource){
-                    'manage' + resource(params.action)
-                }
-            }
-        } else if (params.action == "delete"){
-            for(String resource in flowForDeleteEnv){
-                stage(params.action + ' ' + resource){
-                    'manage' + resource(params.action)
-                }
+    //try {
+    if (params.action == "create"){
+        for(String resource in flowForCreateEnv){
+            stage(params.action + ' ' + resource){
+                'manage' + resource(params.action)
             }
         }
-    } catch(Exception e){
-        println(e)
+    } else if (params.action == "delete"){
+        for(String resource in flowForDeleteEnv){
+            stage(params.action + ' ' + resource){
+                'manage' + resource(params.action)
+            }
+        }
     }
+    /*} catch(Exception e){
+        println(e)
+    }*/
 }
