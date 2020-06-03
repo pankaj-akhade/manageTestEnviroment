@@ -24,13 +24,15 @@ node{
     if (params.action == "create"){
         for(String resource in flowForCreateEnv){
             stage(params.action + ' ' + resource){
-                'manage' + resource(params.action)
+                def methodName = 'manage' + resource
+                "$methodName"(params.action)
             }
         }
     } else if (params.action == "delete"){
         for(String resource in flowForDeleteEnv){
             stage(params.action + ' ' + resource){
-                'manage' + resource(params.action)
+                def methodName = 'manage' + resource
+                "$methodName"(params.action)
             }
         }
     }
