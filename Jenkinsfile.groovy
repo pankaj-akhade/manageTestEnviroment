@@ -24,7 +24,7 @@ def manageGke(String action, String resource){
 node{
     flowResourceList = 'flowFor' + params.action.capitalize() + 'Env'
     println(flowResourceList)
-    for (String resource in 'flowFor' + params.action.capitalize() + 'Env'){
+    for (String resource in "$flowResourceList"){
         stage(params.action + ' ' + resource){
             def methodName = 'manage' + resource.capitalize()
             "$methodName"(params.action, resource)
