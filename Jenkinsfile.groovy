@@ -1,23 +1,18 @@
 #!/usr/bin/env groovy
 
-def flowForCreateEnv = ["vpc", "subnet"]
-def flowForDeleteEnv = ["subnet", "vpc"]
+def flowForCreateEnv = ["gke"]
+def flowForDeleteEnv = ["gke"]
 
-def manageVpc(String action, String resource){
-    def networksCmdMap = ["create": "gcloud compute networks create " +  params.clusterName + "-" + resource +
-                   " --project=" + params.project + " --subnet-mode=custom --bgp-routing-mode=regional",
-                   "delete": "gcloud compute networks delete " +  params.clusterName + "-" + resource + " --project=" +
-                   params.project + " --quiet"]
-    sh networksCmdMap[action]
-}
-
-def manageSubnet(String action, String resource){
-    def networksCmdMap = ["create": "gcloud compute networks subnets create " +  params.clusterName + "-" + resource +
-           " --project=" + params.project + " --range=10.34.0.0/20 --network=" +
-           params.clusterName + "-vpc --region=us-east1",
-           "delete": "gcloud compute networks subnets delete " +  params.clusterName + "-" + resource + " --project=" +
-           params.project + " --region=us-east1 --quiet"]
-    sh networksCmdMap[action]
+def manageGke(String action, String resource){
+    def gkeCreateCmd = "gcloud beta container --project \"" + params.project  + "\" clusters create \"" + params.clusterName +
+     "-" + resource + "\" --region \"" + params.region + "\" --no-enable-basic-auth --cluster-version \"" + params.clusterVersio +
+     "\" --machine-type \"" + params.instanceType + "\" --image-type \"UBUNTU\" --disk-size \"20\" --service-account \"" +
+     params.serviceAccount + "\" --num-nodes \"1\" --enable-stackdriver-kubernetes --enable-ip-alias --network " +
+     "\"projects/flow-on-k8s-test/global/networks/" + params.vpc + "\" --subnetwork \"projects/flow-on-k8s-test/regions/" +
+     params.region + "/subnetworks/" + params.subnet + "\" --enable-autoscaling --min-nodes \"1\" --max-nodes \"3\" " +
+     "--no-enable-master-authorized-networks --addons HorizontalPodAutoscaling,HttpLoadBalancing --no-enable-autoupgrade " +
+     "--enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 --scopes \"https://www.googleapis.com/auth/ndev.clouddns.readwrite\""
+    sh gkeCreateCmd
 }
 
 node{
