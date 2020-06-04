@@ -1,6 +1,6 @@
 #!/usr/bin/env groovy
 
-def flowForCreateEnv = ["gke"]
+def flowForCreateEnv = ["gke", "secret"]
 def flowForDeleteEnv = ["gke"]
 
 def manageGke(String action, String resource){
@@ -13,11 +13,25 @@ def manageGke(String action, String resource){
          params.region + "/subnetworks/" + params.subnet + "\" --enable-autoscaling --min-nodes \"1\" --max-nodes \"3\" " +
          "--no-enable-master-authorized-networks --addons HorizontalPodAutoscaling,HttpLoadBalancing --no-enable-autoupgrade " +
          "--enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 --scopes \"https://www.googleapis.com/auth/ndev.clouddns.readwrite\""
+        def kubeConfigFile = "${HOME}/.kube/config"
+        def file = new File(kubeConfigFile)
+        if (file.exists()){
+            println("Deleting already existing kubeconfig file")
+            file.delete()
+        }
         sh gkeCreateCmd
     } else if (action == "delete"){
         def gkeDeleteCmd = "gcloud container clusters delete " + params.clusterName + "-" + resource + " --region " +
          params.region + " --quiet"
         sh gkeDeleteCmd
+    }
+}
+
+
+
+def manageSecret(String action, String resource){
+    if(action == "create"){
+        def createSecretCmd =
     }
 }
 
