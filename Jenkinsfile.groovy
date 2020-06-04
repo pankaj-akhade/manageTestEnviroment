@@ -26,14 +26,14 @@ def manageGke(String action, String resource){
         sh gkeDeleteCmd
     }
 }
-
+/*
 
 
 def manageSecret(String action, String resource){
     if(action == "create"){
         def createSecretCmd =
     }
-}
+}*/
 
 node{
     if (params.action == "create"){
