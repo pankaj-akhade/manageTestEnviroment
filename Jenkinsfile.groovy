@@ -51,11 +51,11 @@ def manageMysql(String action, String resource){
     if(action == "create"){
         def mysqlDbPostfix = randomAlphanumeric(5)
         def mysqlApiEnableCmd = "gcloud services enable sqladmin.googleapis.com"
-        def createMysqlCmd = "gcloud beta sql instances create " + params.mysqlDbName + "-" + "-" + resource + "-" +
+        def createMysqlCmd = "gcloud beta sql instances create " + params.mysqlDbName + "-" + resource + "-" +
         mysqlDbPostfix + " --database-version " + params.mysqlDbVersion + " --region " + params.region + " --network " +
           params.vpc + " --tier " + params.mysqlDbTier + " --storage-size 10 --storage-auto-increase --quiet"
-        def createMysqlUserCmd = "gcloud sql users create commander  --host=% --instance=" + params.mysqlDbName "-" +
-          mysqlDbPostfix + " --password=commander"
+        def createMysqlUserCmd = "gcloud sql users create commander  --host=% --instance=" + params.mysqlDbName + "-" +
+          resource + "-" + mysqlDbPostfix + " --password=commander"
         println("Enabling sql admin api")
         sh mysqlApiEnableCmd
         println("Sleeping for 10 seconds")
