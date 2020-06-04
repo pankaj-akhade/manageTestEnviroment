@@ -32,7 +32,7 @@ def manageGke(String action, String resource){
 
 def getMysqlInstancesList(){
     def getMysqlInstancesListCmd = "gcloud sql instances list --format=\"json(name)\" --filter=\"name:" +
-      params.mysqlDbName\""
+      params.mysqlDbName + "\""
     return sh(script: getMysqlInstancesListCmd, returnStdout: true)
 }
 
