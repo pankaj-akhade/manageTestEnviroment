@@ -22,27 +22,15 @@ def manageGke(String action, String resource){
 }
 
 node{
-    flowResourceList = 'flowFor' + params.action.capitalize() + 'Env'
-    println("$flowResourceList")
-    for (String resource in 'flowFor' + params.action.capitalize() + 'Env'){
+    if (params.action == "create"){
+        flowResourceList = flowForCreateEnv
+    } else if (params.action == "delete"){
+        flowResourceList = flowForDeleteEnv
+    }
+    for(String resource in flowResourceList){
         stage(params.action + ' ' + resource){
             def methodName = 'manage' + resource.capitalize()
             "$methodName"(params.action, resource)
         }
-    }/*
-    if (params.action == "create"){
-        for(String resource in flowForCreateEnv){
-            stage(params.action + ' ' + resource){
-                def methodName = 'manage' + resource.capitalize()
-                "$methodName"(params.action, resource)
-            }
-        }
-    } else if (params.action == "delete"){
-        for(String resource in flowForDeleteEnv){
-            stage(params.action + ' ' + resource){
-                def methodName = 'manage' + resource.capitalize()
-                "$methodName"(params.action, resource)
-            }
-        }
-    }*/
+    }
 }
