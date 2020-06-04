@@ -15,13 +15,20 @@ def manageGke(String action, String resource){
          "--enable-autorepair --max-surge-upgrade 1 --max-unavailable-upgrade 0 --scopes \"https://www.googleapis.com/auth/ndev.clouddns.readwrite\""
         sh gkeCreateCmd
     } else if (action == "delete"){
-        def gkeDeleteCmd = "gcloud container clusters delete " + params.clusterName + " --region " + params.region +
-         " --quiet"
+        def gkeDeleteCmd = "gcloud container clusters delete " + params.clusterName + "-" + resource + " --region " +
+         params.region + " --quiet"
         sh gkeDeleteCmd
     }
 }
 
 node{
+    flowResourceList = 'flowFor' + params.action.capitalize() + 'Env'
+    for (String resource in flowResourceList){
+        stage(params.action + ' ' + resource){
+            def methodName = 'manage' + resource.capitalize()
+            "$methodName"(params.action, resource)
+        }
+    }/*
     if (params.action == "create"){
         for(String resource in flowForCreateEnv){
             stage(params.action + ' ' + resource){
@@ -36,5 +43,5 @@ node{
                 "$methodName"(params.action, resource)
             }
         }
-    }
+    }*/
 }
