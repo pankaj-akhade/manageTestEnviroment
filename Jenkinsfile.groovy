@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-import org.apache.commons.lang.RandomStringUtils.randomAlphanumeric
+import org.apache.commons.lang.RandomStringUtils.randomAlphanumeric.*
 
 def flowForCreateEnv = ["mysql"]
 def flowForDeleteEnv = ["mysql"]
