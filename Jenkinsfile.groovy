@@ -5,7 +5,7 @@ def flowForDeleteEnv = ["mysql"]
 
 def manageGke(String action, String resource){
     if(action == "create"){
-        def gkeCreateCmd = "gcloud beta container --project \"" + params.project  + "\" clusters create \"" + params.clusterName +
+        def gkeCreateCmd = "gcloud beta container --project \"" + params.project  + "\" clusters create \"" + params.envName +
          "-" + resource + "\" --region \"" + params.region + "\" --no-enable-basic-auth --cluster-version \"" + params.clusterVersion +
          "\" --machine-type \"" + params.instanceType + "\" --image-type \"UBUNTU\" --disk-size \"20\" --service-account \"" +
          params.serviceAccount + "\" --num-nodes \"1\" --enable-stackdriver-kubernetes --enable-ip-alias --network " +
@@ -22,7 +22,7 @@ def manageGke(String action, String resource){
         println("Creating GKE cluster")
         sh gkeCreateCmd
     } else if (action == "delete"){
-        def gkeDeleteCmd = "gcloud container clusters delete " + params.clusterName + "-" + resource + " --region " +
+        def gkeDeleteCmd = "gcloud container clusters delete " + params.envName + "-" + resource + " --region " +
          params.region + " --quiet"
         println("Deleting GKE cluster")
         sh gkeDeleteCmd
@@ -31,7 +31,7 @@ def manageGke(String action, String resource){
 
 def getMysqlInstancesList(){
     def getMysqlInstancesListCmd = "gcloud sql instances list --format=\"json(name)\" --filter=\"name:" +
-      params.mysqlDbName + "\""
+      params.envName + "\""
     return sh(script: getMysqlInstancesListCmd, returnStdout: true)
 }
 
@@ -50,10 +50,10 @@ def manageMysql(String action, String resource){
     if(action == "create"){
         def mysqlDbPostfix = new Date().format("ddMMHHmm")
         def mysqlApiEnableCmd = "gcloud services enable sqladmin.googleapis.com"
-        def createMysqlCmd = "gcloud beta sql instances create " + params.mysqlDbName + "-" + resource + "-" +
+        def createMysqlCmd = "gcloud beta sql instances create " + params.envName + "-" + resource + "-" +
         mysqlDbPostfix + " --database-version " + params.mysqlDbVersion + " --region " + params.region + " --network " +
           params.vpc + " --tier " + params.mysqlDbTier + " --storage-size 10 --storage-auto-increase --quiet"
-        def createMysqlUserCmd = "gcloud sql users create commander  --host=% --instance=" + params.mysqlDbName + "-" +
+        def createMysqlUserCmd = "gcloud sql users create commander  --host=% --instance=" + params.envName + "-" +
           resource + "-" + mysqlDbPostfix + " --password=commander"
         println("Enabling sql admin api")
         sh mysqlApiEnableCmd
