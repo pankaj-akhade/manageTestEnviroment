@@ -39,9 +39,9 @@ def getMysqlInstanceName(){
     def getMysqlInstances = getMysqlInstancesList()
     def mysqlInstanceCount = sh (script: "echo '$getMysqlInstances' | jq '. | length'", returnStdout: true)
     if (mysqlInstanceCount.toInteger() == 0){
-        throw new Exception("Did not find any instances. Exiting")
+        throw new Exception("Did not find any instances")
     } else if (mysqlInstanceCount.toInteger() != 1){
-        throw new Exception("Found more than one instances. Exiting")
+        throw new Exception("Found more than one instances")
     } else {
         return sh (script: "echo '$getMysqlInstances' | jq '.[].name'", returnStdout: true)
     }
@@ -69,7 +69,7 @@ def manageMysql(String action, String resource){
         println("Creating commander user")
         sh createMysqlUserCmd
     } else if (action == "delete"){
-        def mysqlDeleteCmd = "gcloud sql instances delete " +  getMysqlInstanceName() + " --quiet"
+        def mysqlDeleteCmd = "gcloud sql instances delete " +  getMysqlInstanceName().trim() + " --quiet"
         println("Deleting Mysql database")
         sh mysqlDeleteCmd
     }
