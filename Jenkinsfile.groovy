@@ -49,23 +49,23 @@ def getMysqlInstanceName(){
 
 def manageMysql(String action, String resource){
     if(action == "create"){
-        def mysqlDbPostfix = new Date().format("ddMMHHmm")
+        //def mysqlDbPostfix = new Date().format("ddMMHHmm")
         def mysqlApiEnableCmd = "gcloud services enable sqladmin.googleapis.com"
-        def createMysqlCmd = "gcloud beta sql instances create " + params.envName + "-" + resource + "-" +
-        mysqlDbPostfix + " --database-version " + params.mysqlDbVersion + " --region " + params.region + " --network " +
-          params.vpc + " --tier " + params.mysqlDbTier + " --storage-size 10 --storage-auto-increase --quiet"
+        def createMysqlCmd = "gcloud beta sql instances create " + params.envName + "-" + resource + " --database-version " +
+        params.mysqlDbVersion + " --region " + params.region + " --network " + params.vpc + " --tier " + params.mysqlDbTier +
+        " --storage-size 10 --storage-auto-increase --quiet"
         def createMysqlUserCmd = "gcloud sql users create commander  --host=% --instance=" + params.envName + "-" +
-          resource + "-" + mysqlDbPostfix + " --password=commander"
+          resource + " --password=commander"
         println("Enabling sql admin api")
         sh mysqlApiEnableCmd
         println("Sleeping for 10 seconds")
         sh "sleep 10"
         println("Creating Mysql database")
         sh createMysqlCmd
-        println("Sleeping for 20 seconds")
-        sh "sleep 20"
+        //println("Sleeping for 20 seconds")
+        //sh "sleep 20"
         println("Deleting root user")
-        sh "gcloud sql users delete root --host=% --instance=test-mysql --quiet"
+        sh "gcloud sql users delete root --host=% --instance=" + params.envName + "-" + resource + " --quiet"
         println("Creating commander user")
         sh createMysqlUserCmd
     } else if (action == "delete"){
