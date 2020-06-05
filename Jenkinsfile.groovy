@@ -1,5 +1,4 @@
 #!/usr/bin/env groovy
-import org.apache.commons.lang.RandomStringUtils.randomAlphanumeric.*
 
 def flowForCreateEnv = ["mysql"]
 def flowForDeleteEnv = ["mysql"]
@@ -49,7 +48,7 @@ def getMysqlInstanceName(){
 
 def manageMysql(String action, String resource){
     if(action == "create"){
-        def mysqlDbPostfix = randomAlphanumeric(5)
+        def mysqlDbPostfix = new Date().format("ddMMHHmm")
         def mysqlApiEnableCmd = "gcloud services enable sqladmin.googleapis.com"
         def createMysqlCmd = "gcloud beta sql instances create " + params.mysqlDbName + "-" + resource + "-" +
         mysqlDbPostfix + " --database-version " + params.mysqlDbVersion + " --region " + params.region + " --network " +
