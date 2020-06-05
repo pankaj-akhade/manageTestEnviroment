@@ -1,5 +1,7 @@
 #!/usr/bin/env groovy
 
+import java.lang.System
+
 def flowForCreateEnv = ["mysql"]
 def flowForDeleteEnv = ["mysql"]
 
