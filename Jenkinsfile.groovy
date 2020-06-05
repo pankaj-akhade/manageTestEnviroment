@@ -51,6 +51,7 @@ def getValidMysqlInstanceName(){
     } else if (mysqlInstanceCount.toInteger() != 1){
         throw new Exception("Found more than one instances")
     } else {
+        def getMysqlInstances = getMysqlInstancesList()
         return sh (script: "echo '$getMysqlInstances' | jq '.[].name'", returnStdout: true)
     }
 }
@@ -63,7 +64,7 @@ def manageMysql(String action, String resource){
         def createMysqlCmd = "gcloud beta sql instances create " + instanceName + "-" + resource + " --database-version " +
         params.mysqlDbVersion + " --region " + params.region + " --network " + params.vpc + " --tier " + params.mysqlDbTier +
         " --storage-size 10 --storage-auto-increase --quiet"
-        def createMysqlUserCmd = "gcloud sql users create commander  --host=% --instance=" + instanceName + "-" +
+        def createMysqlUserCmd = "gcloud sql users create commander --host=% --instance=" + instanceName + "-" +
           resource + " --password=commander"
         println("Enabling sql admin api")
         sh mysqlApiEnableCmd
