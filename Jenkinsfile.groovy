@@ -38,6 +38,7 @@ def getMysqlInstancesList(){
 def getMysqlInstanceName(){
     def getMysqlInstances = getMysqlInstancesList()
     def mysqlInstanceCount = sh (script: "echo '$getMysqlInstances' | jq '. | length'", returnStdout: true)
+    println(mysqlInstanceCount)
     if (mysqlInstanceCount == 0){
         println("Did not find any instances. Exiting")
         return 1
