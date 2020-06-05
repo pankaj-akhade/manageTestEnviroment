@@ -85,7 +85,7 @@ def manageMysql(String action, String resource){
 def manageFilestore(String action, String resource){
     if(action == "create"){
         def createFilestoreCmd = "gcloud filestore instances create " + params.envName + "-" + resource + " --project=" +
-          params.project + " --zone=" + params.region + "-b --tier=STANDARD --file-share=name="\"filestore\",capacity=1TB" +
+          params.project + " --zone=" + params.region + "-b --tier=STANDARD --file-share=name=\"filestore\",capacity=1TB" +
           " --network=name=\"" + params.vpc + "\""
         println("Creating Filestore instance")
         sh createFilestoreCmd
