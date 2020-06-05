@@ -38,7 +38,7 @@ def getMysqlInstancesList(){
 def getMysqlInstanceName(){
     def getMysqlInstances = getMysqlInstancesList()
     def script =
-    def mysqlInstanceCount = sh (script: "echo '$getMysqlInstances' | jq '. | length'", returnStdout: true).trim()
+    def mysqlInstanceCount = sh (script: "echo '$getMysqlInstances' | jq '. | length'", returnStdout: true)
     if (mysqlInstanceCount != 1){
         println("Found more than one instances. Exiting")
         System.exit(1)
