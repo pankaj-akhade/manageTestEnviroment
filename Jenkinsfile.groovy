@@ -35,11 +35,19 @@ def getMysqlInstancesList(){
     return sh(script: getMysqlInstancesListCmd, returnStdout: true)
 }
 
-def getMysqlInstanceName(){
+def getMysqlInstanceCount(){
     def getMysqlInstances = getMysqlInstancesList()
-    def mysqlInstanceCount = sh (script: "echo '$getMysqlInstances' | jq '. | length'", returnStdout: true)
+    return sh (script: "echo '$getMysqlInstances' | jq '. | length'", returnStdout: true)
+}
+
+def getValidMysqlInstanceName(){
+    def mysqlInstanceCount = getMysqlInstanceCount().trim()
     if (mysqlInstanceCount.toInteger() == 0){
-        throw new Exception("Did not find any instances")
+        if (params.action == "delete"){
+            throw new Exception("Did not find any instances")
+        } else if (params.action == "create"){
+            return params.envName
+        }
     } else if (mysqlInstanceCount.toInteger() != 1){
         throw new Exception("Found more than one instances")
     } else {
@@ -48,13 +56,14 @@ def getMysqlInstanceName(){
 }
 
 def manageMysql(String action, String resource){
+    def instanceName = getValidMysqlInstanceName().trim()
     if(action == "create"){
         //def mysqlDbPostfix = new Date().format("ddMMHHmm")
         def mysqlApiEnableCmd = "gcloud services enable sqladmin.googleapis.com"
-        def createMysqlCmd = "gcloud beta sql instances create " + params.envName + "-" + resource + " --database-version " +
+        def createMysqlCmd = "gcloud beta sql instances create " + instanceName + "-" + resource + " --database-version " +
         params.mysqlDbVersion + " --region " + params.region + " --network " + params.vpc + " --tier " + params.mysqlDbTier +
         " --storage-size 10 --storage-auto-increase --quiet"
-        def createMysqlUserCmd = "gcloud sql users create commander  --host=% --instance=" + params.envName + "-" +
+        def createMysqlUserCmd = "gcloud sql users create commander  --host=% --instance=" + instanceName + "-" +
           resource + " --password=commander"
         println("Enabling sql admin api")
         sh mysqlApiEnableCmd
@@ -65,11 +74,11 @@ def manageMysql(String action, String resource){
         //println("Sleeping for 20 seconds")
         //sh "sleep 20"
         println("Deleting root user")
-        sh "gcloud sql users delete root --host=% --instance=" + params.envName + "-" + resource + " --quiet"
+        sh "gcloud sql users delete root --host=% --instance=" + instanceName + "-" + resource + " --quiet"
         println("Creating commander user")
         sh createMysqlUserCmd
     } else if (action == "delete"){
-        def mysqlDeleteCmd = "gcloud sql instances delete " +  getMysqlInstanceName().trim() + " --quiet"
+        def mysqlDeleteCmd = "gcloud sql instances delete " + instanceName + " --quiet"
         println("Deleting Mysql database")
         sh mysqlDeleteCmd
     }
