@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
-def flowForCreateEnv = ["mysql"]
-def flowForDeleteEnv = ["mysql"]
+def flowForCreateEnv = ["filestore"]
+def flowForDeleteEnv = ["filestore"]
 
 def manageGke(String action, String resource){
     if(action == "create"){
@@ -59,7 +59,6 @@ def getValidMysqlInstanceName(){
 def manageMysql(String action, String resource){
     def instanceName = getValidMysqlInstanceName().trim()
     if(action == "create"){
-        //def mysqlDbPostfix = new Date().format("ddMMHHmm")
         def mysqlApiEnableCmd = "gcloud services enable sqladmin.googleapis.com"
         def createMysqlCmd = "gcloud beta sql instances create " + instanceName + "-" + resource + " --database-version " +
         params.mysqlDbVersion + " --region " + params.region + " --network " + params.vpc + " --tier " + params.mysqlDbTier +
@@ -72,8 +71,6 @@ def manageMysql(String action, String resource){
         sh "sleep 10"
         println("Creating Mysql database")
         sh createMysqlCmd
-        //println("Sleeping for 20 seconds")
-        //sh "sleep 20"
         println("Deleting root user")
         sh "gcloud sql users delete root --host=% --instance=" + instanceName + "-" + resource + " --quiet"
         println("Creating commander user")
@@ -82,6 +79,21 @@ def manageMysql(String action, String resource){
         def mysqlDeleteCmd = "gcloud sql instances delete " + instanceName + " --quiet"
         println("Deleting Mysql database")
         sh mysqlDeleteCmd
+    }
+}
+
+def manageFilestore(String action, String resource){
+    if(action == "create"){
+        def createFilestoreCmd = "gcloud filestore instances create " + params.envName + "-" + resource + " --project=" +
+          params.project + " --zone=" + params.region + "-b --tier=STANDARD --file-share=name="\"filestore\",capacity=1TB" +
+          " --network=name=\"" + params.vpc + "\""
+        println("Creating Filestore instance")
+        sh createFilestoreCmd
+    } else if (action == "delete"){
+        def filestoreDeleteCmd = "gcloud filestore instances delete " + params.envName + "-" + resource + " --project=" +
+          params.project + " --zone=" + params.region + "-b --quiet"
+        println("Deleting Filestore instance")
+        sh filestoreDeleteCmd
     }
 }
 
