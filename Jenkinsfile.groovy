@@ -62,6 +62,8 @@ def manageMysql(String action, String resource){
         sh "sleep 10"
         println("Creating Mysql database")
         sh createMysqlCmd
+        println("Sleeping for 20 seconds")
+        sh "sleep 20"
         println("Deleting root user")
         sh "gcloud sql users delete root --host=% --instance=test-mysql --quiet"
         println("Creating commander user")
