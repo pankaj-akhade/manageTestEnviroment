@@ -1,7 +1,5 @@
 #!/usr/bin/env groovy
 
-import java.lang.System
-
 def flowForCreateEnv = ["mysql"]
 def flowForDeleteEnv = ["mysql"]
 
@@ -42,10 +40,10 @@ def getMysqlInstanceName(){
     def mysqlInstanceCount = sh (script: "echo '$getMysqlInstances' | jq '. | length'", returnStdout: true)
     if (mysqlInstanceCount == 0){
         println("Did not find any instances. Exiting")
-        System.exit(1)
+        return 1
     } else if (mysqlInstanceCount != 1){
         println("Found more than one instances. Exiting")
-        System.exit(1)
+        return 2
     } else {
         return sh (script: "echo '$getMysqlInstances' | jq '.[].name'", returnStdout: true)
     }
