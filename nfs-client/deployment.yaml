@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nfs-client-provisioner
+  name: nfs-provisioner-nfs-client-provisioner
+  namespace: storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      containers:
+      - env:
+        - name: PROVISIONER_NAME
+          value: cluster.local/nfs-provisioner-nfs-client-provisioner
+        - name: NFS_SERVER
+          value: <filestore-ip>
+        - name: NFS_PATH
+          value: /filestore
+        image: quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
+        imagePullPolicy: IfNotPresent
+        name: nfs-client-provisioner
+        volumeMounts:
+        - mountPath: /persistentvolumes
+          name: nfs-client-root
+      serviceAccount: nfs-provisioner-nfs-client-provisioner
+      serviceAccountName: nfs-provisioner-nfs-client-provisioner
+      volumes:
+      - name: nfs-client-root
+        nfs:
+          path: /filestore
+          server: <filestore-ip>
