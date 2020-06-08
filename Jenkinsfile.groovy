@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
-def flowForCreateEnv = ["mssql"]
-def flowForDeleteEnv = ["mssql"]
+def flowForCreateEnv = ["gsbucket"]
+def flowForDeleteEnv = ["gsbucket"]
 
 def manageGke(String action, String resource){
     if(action == "create"){
@@ -29,35 +29,35 @@ def manageGke(String action, String resource){
     }
 }
 
-def getMysqlInstancesList(){
-    def getMysqlInstancesListCmd = "gcloud sql instances list --format=\"json(name)\" --filter=\"name:" +
+def getDbInstancesList(){
+    def getDbInstancesListCmd = "gcloud sql instances list --format=\"json(name)\" --filter=\"name:" +
       params.envName + "\""
-    return sh(script: getMysqlInstancesListCmd, returnStdout: true)
+    return sh(script: getDbInstancesListCmd, returnStdout: true)
 }
 
-def getMysqlInstanceCount(){
-    def getMysqlInstances = getMysqlInstancesList()
-    return sh (script: "echo '$getMysqlInstances' | jq '. | length'", returnStdout: true)
+def getDbInstanceCount(){
+    def getDbInstances = getDbInstancesList()
+    return sh (script: "echo '$getDbInstances' | jq '. | length'", returnStdout: true)
 }
 
-def getValidMysqlInstanceName(){
-    def mysqlInstanceCount = getMysqlInstanceCount().trim()
-    if (mysqlInstanceCount.toInteger() == 0){
+def getValidDbInstanceName(){
+    def dbInstanceCount = getDbInstanceCount().trim()
+    if (dbInstanceCount.toInteger() == 0){
         if (params.action == "delete"){
             throw new Exception("Did not find any instances")
         } else if (params.action == "create"){
             return params.envName
         }
-    } else if (mysqlInstanceCount.toInteger() != 1){
+    } else if (dbInstanceCount.toInteger() != 1){
         throw new Exception("Found more than one instances")
     } else {
-        def getMysqlInstances = getMysqlInstancesList()
-        return sh (script: "echo '$getMysqlInstances' | jq '.[].name'", returnStdout: true)
+        def getDbInstances = getDBInstancesList()
+        return sh (script: "echo '$getDbInstances' | jq '.[].name'", returnStdout: true)
     }
 }
 
 def manageMysql(String action, String resource){
-    def instanceName = getValidMysqlInstanceName().trim()
+    def instanceName = getValidDbInstanceName().trim()
     if(action == "create"){
         def mysqlApiEnableCmd = "gcloud services enable sqladmin.googleapis.com"
         def createMysqlCmd = "gcloud beta sql instances create " + instanceName + "-" + resource + " --database-version " +
@@ -118,6 +118,19 @@ def manageMssql(String action, String resource){
         def mysqlDeleteCmd = "gcloud sql instances delete " + instanceName + " --quiet"
         println("Deleting Mssql database")
         sh mysqlDeleteCmd
+    }
+}
+
+def manageGsbucket(String action, String resource){
+    if (action == "create"){
+        def createGsBucketCmd = "gsutil mb -p " + params.project + " -l " + params.region + " gs://" + params.envName + "-" +
+          resource + "/"
+        def uploadConfigCmd = "gsutil cp $HOME/.kube/config gs://" + params.envName + "-" + resource + "/metadata/kube_config"
+        sh createGsBucketCmd
+        sh uploadConfigCmd
+    } else if (action == "delete"){
+        def deleteGsBucketCmd = "gsutil rm -r gs://" + params.envName + "-" + resource
+        sh deleteGsBucketCmd
     }
 }
 
