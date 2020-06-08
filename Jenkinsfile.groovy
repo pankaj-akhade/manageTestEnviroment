@@ -165,10 +165,11 @@ def manageNfs(String action, String resource){
 }
 
 node{
+    def skipResourcesList = params.skipResourcesList.split(',')
     if (params.action == "create"){
-        flowResourceList = flowForCreateEnv
+        flowResourceList = flowForCreateEnv.minus(skipResourcesList)
     } else if (params.action == "delete"){
-        flowResourceList = flowForDeleteEnv
+        flowResourceList = flowForDeleteEnv.minus(skipResourcesList)
     }
     for(String resource in flowResourceList){
         stage(params.action + ' ' + resource){
