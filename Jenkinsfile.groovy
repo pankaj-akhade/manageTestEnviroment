@@ -1,7 +1,6 @@
 #!/usr/bin/env groovy
 
-def flowForCreateEnv = ["mysql"]
-//,"filestore","gke","gsbucket","secret","extdns","nfs"]
+def flowForCreateEnv = ["mysql","filestore","gke","gsbucket","secret","extdns","nfs"]
 def flowForDeleteEnv = ["mysql","filestore","gke","gsbucket"]
 
 def manageGke(String action, String resource){
@@ -151,7 +150,7 @@ def manageExtdns(String action, String resource){
     }
 }
 
-manageNfs(String action, String resource){
+def manageNfs(String action, String resource){
     if(action == "create"){
         def fsIp = sh (script: "gcloud filestore instances describe " + params.envName + "-filestore --zone=" + params.region +
           "-b --format=\"json(networks)\" | jq .networks[0].ipAddresses[0] | tr -d '\"'", returnStdout: true).trim()
