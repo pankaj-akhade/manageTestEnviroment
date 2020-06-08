@@ -153,7 +153,7 @@ def manageExtdns(String action, String resource){
 manageNfs(String action, String resource){
     if(action == "create"){
         def fsIp = sh (script: "gcloud filestore instances describe " + params.envName + "-filestore --zone=" + params.region +
-          "-b --format=\"json(networks)\" | jq .networks[0].ipAddresses[0] | tr -d '\"'"
+          "-b --format=\"json(networks)\" | jq .networks[0].ipAddresses[0] | tr -d '\"'", returnStdout: true).trim()
         sh "sed 's/<project-id>/$fsIp/g' deployment.yaml"
         sh "kubectl create namespace storage"
         sh "kubectl create -f nfs-client/serviceaccount.yaml"
