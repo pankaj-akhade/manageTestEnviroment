@@ -170,10 +170,16 @@ node{
     def skipResourcesList = params.skipResources.split(',')
     println(skipResourcesList)
     if (params.action == "create"){
-        flowResourceList = flowForCreateEnv.minus(skipResourcesList)
+        for (String resource in skipResourcesList){
+            flowForCreateEnv.remove(resource)
+        }
+        flowResourceList = flowForCreateEnv
         println(flowResourceList)
     } else if (params.action == "delete"){
-        flowResourceList = flowForDeleteEnv.minus(skipResourcesList)
+        for (String resource in skipResourcesList){
+            flowForDeleteEnv.remove(resource)
+        }
+        flowResourceList = flowForDeleteEnv
     }
     for(String resource in flowResourceList){
         stage(params.action + ' ' + resource){
