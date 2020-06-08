@@ -3,5 +3,5 @@ kind: StorageClass
 metadata:
   labels:
     app: nfs-client-provisioner
-  name: aws-efs-storage
+  name: gcp-filestore-storage
 provisioner: cluster.local/nfs-provisioner-nfs-client-provisioner
