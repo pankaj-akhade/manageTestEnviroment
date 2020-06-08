@@ -148,7 +148,7 @@ def manageSecret(String action, String resource){
 def manageExtdns(String action, String resource){
     if(action == "create"){
         sh "sed 's/<project-id>/" + params.project + "/g' external-dns.yaml"
-        sh "kubectl create -f external-dns"
+        sh "kubectl create -f external-dns.yaml"
     }
 }
 
