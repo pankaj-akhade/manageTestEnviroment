@@ -45,13 +45,15 @@ def getValidDbInstanceName(){
     if (dbInstanceCount.toInteger() == 0){
         if (params.action == "delete"){
             throw new Exception("Did not find any instances")
-        } else if (params.action == "create"){
-            return params.envName
         }
+        return params.envName
     } else if (dbInstanceCount.toInteger() != 1){
         throw new Exception("Found more than one instances")
     } else {
-        def getDbInstances = getDBInstancesList()
+        if (params.action == "create"){
+            throw new Exception("Instance with name consists " + params.envName + " already exists")
+        }
+        def getDbInstances = getDbInstancesList()
         return sh (script: "echo '$getDbInstances' | jq '.[].name'", returnStdout: true)
     }
 }
@@ -165,7 +167,7 @@ def manageNfs(String action, String resource){
 }
 
 node{
-    def skipResourcesList = params.skipResources.split(',')
+    def skipResourcesList = params.skipResources
     if (params.action == "create"){
         flowResourceList = flowForCreateEnv.minus(skipResourcesList)
     } else if (params.action == "delete"){
