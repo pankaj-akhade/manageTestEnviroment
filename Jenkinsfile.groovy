@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
-def flowForCreateEnv = ["gsbucket"]
-def flowForDeleteEnv = ["gsbucket"]
+def flowForCreateEnv = ["mysql","filestore","gke","gsbucket","secret","extdns","nfs"]
+def flowForDeleteEnv = ["mysql","filestore","gke","gsbucket"]
 
 def manageGke(String action, String resource){
     if(action == "create"){
@@ -134,13 +134,35 @@ def manageGsbucket(String action, String resource){
     }
 }
 
-/*def manageSecret(String action, String resource){
+def manageSecret(String action, String resource){
     if(action == "create"){
-        def createSecretCmd = "kubectl create secret generic gcp-sql-endpoint --from-literal="
-    } else if (params.action == "delete"){
-
+        def mysqlEndpoint = sh (script: "gcloud sql instances describe " + params.envName + "-" + "mysql --format=\"json(ipAddresses)\" " +
+          "| jq .ipAddresses[].ipAddress | tail -1 | tr -d '\"'", returnStdout: true).trim()
+        def createSecretCmd = "kubectl create secret generic gcp-sql-endpoint --from-literal=sql_endpoint=$mysqlEndpoint"
+        sh createSecretCmd
     }
-}*/
+}
+
+def manageExtdns(String action, String resource){
+    if(action == "create"){
+        sh "sed 's/<project-id>/" + params.project + "/g' external-dns.yaml"
+        sh "kubectl create -f external-dns"
+    }
+}
+
+manageNfs(String action, String resource){
+    if(action == "create"){
+        def fsIp = sh (script: "gcloud filestore instances describe " + params.envName + "-filestore --zone=" + params.region +
+          "-b --format=\"json(networks)\" | jq .networks[0].ipAddresses[0] | tr -d '\"'"
+        sh "sed 's/<project-id>/" + fsIp + "/g' deployment.yaml"
+        sh "kubectl create namespace storage"
+        sh "kubectl create -f nfs-client/serviceaccount.yaml"
+        sh "kubectl create -f nfs-client/clusterrole.yaml"
+        sh "kubectl create -f nfs-client/clusterrolebinding.yaml"
+        sh "kubectl create -f nfs-client/serviceaccount.yaml"
+        sh "kubectl create -f nfs-client/serviceaccount.yaml"
+    }
+}
 
 node{
     if (params.action == "create"){
