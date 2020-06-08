@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
-def flowForCreateEnv = ["filestore"]
-def flowForDeleteEnv = ["filestore"]
+def flowForCreateEnv = ["mssql"]
+def flowForDeleteEnv = ["mssql"]
 
 def manageGke(String action, String resource){
     if(action == "create"){
@@ -94,6 +94,30 @@ def manageFilestore(String action, String resource){
           params.project + " --zone=" + params.region + "-b --quiet"
         println("Deleting Filestore instance")
         sh filestoreDeleteCmd
+    }
+}
+
+def manageMssql(String action, String resource){
+    def instanceName = getValidMysqlInstanceName().trim()
+    if(action == "create"){
+        def mssqlApiEnableCmd = "gcloud services enable sqladmin.googleapis.com"
+        def createMssqlCmd = "gcloud beta sql instances create " + instanceName + "-" + resource + " --database-version=" +
+        params.mssqlDbVersion + " --root-password=admincommander --region=" + params.region + " --network=" + params.vpc + " --tier=" + params.mssqlDbTier +
+        " --storage-size=10 --storage-auto-increase --quiet"
+        def createMssqlUserCmd = "gcloud sql users create commander --instance=" + instanceName + "-" +
+          resource + " --password=commander"
+        println("Enabling sql admin api")
+        sh mssqlApiEnableCmd
+        println("Sleeping for 10 seconds")
+        sh "sleep 10"
+        println("Creating Mssql database")
+        sh createMssqlCmd
+        println("Creating commander user")
+        sh createMssqlUserCmd
+    } else if (action == "delete"){
+        def mysqlDeleteCmd = "gcloud sql instances delete " + instanceName + " --quiet"
+        println("Deleting Mssql database")
+        sh mysqlDeleteCmd
     }
 }
 
