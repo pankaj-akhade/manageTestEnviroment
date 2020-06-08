@@ -167,6 +167,9 @@ def manageNfs(String action, String resource){
 }
 
 node{
+    stage('SCM Checkout'){
+        checkout scm
+    }
     def skipResourcesList = params.skipResources.split(',')
     println(skipResourcesList)
     if (params.action == "create"){
