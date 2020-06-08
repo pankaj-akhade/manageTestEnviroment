@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 
-def flowForCreateEnv = ["mysql","filestore","gke","gsbucket","secret","extdns","nfs"]
+def flowForCreateEnv = ["mysql"]
+//,"filestore","gke","gsbucket","secret","extdns","nfs"]
 def flowForDeleteEnv = ["mysql","filestore","gke","gsbucket"]
 
 def manageGke(String action, String resource){
